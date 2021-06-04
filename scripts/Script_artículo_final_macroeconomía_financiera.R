@@ -4,6 +4,7 @@ library(tidyverse)
 library(readxl)
 library(dynlm)
 library(xts)
+library(stargazer)
 
 ###
 # Modelo macro factorial para analizar el mercado accionario colombiano 
@@ -41,9 +42,9 @@ variables$UI = variables$inflacion_observada - variables$Inflacion_pronosticada
 # Cambios en la inflación esperada: DEI
 variables$DEI = diff(variables$Inflacion_pronosticada)
 # Term structure: UTS
-variables$UTS = variables$tasa_10_años - variables$tasa_1_año
+variables$UTS = variables$tasa_1_año_numero - variables$tasa_10_años_numero
 
-  
+
 # 3. Regreiones ----
 
 # 3.1 Estimación de factor loadings por medio de una regresión de series de tiempo ----
@@ -106,7 +107,7 @@ market_petroleum = factor_loadings(completa, "market_petroleum")
 
 factor_risk_premium = function(factor_loadings, completa, tipo){
   # Se va a tomar como la tasa libre de riesgo el promedio de la tasa de los TES a 1 año durante el periodo estudiado 
-  riskless_return = log(mean(completa$tasa_1_año)/100)
+  riskless_return = mean(completa$tasa_1_año_numero)
   mean_return = c()
   for (equity in 1:15){
     mean_i = mean(completa[,equity], na.rm = TRUE)
@@ -138,4 +139,7 @@ market_risk_p = factor_risk_premium(market, completa, "market")
 petroleum_risk_p = factor_risk_premium(petroleum, completa, "petroleum")
 # 4. Con market con petroleo
 market_petroleum_risk_p = factor_risk_premium(market_petroleum, completa, "market_petroleum")
+
+# 4. Presentación de resultados ----
+
 
